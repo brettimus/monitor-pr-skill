@@ -4,9 +4,14 @@ A [Claude Code](https://claude.ai/code) skill plugin for monitoring PR CI checks
 
 ## Installation
 
-**From a marketplace** (if configured):
+Inside a Claude Code session:
+
 ```bash
-claude plugin install monitor-pr@<marketplace-name>
+# Add the repo as a marketplace
+/plugin marketplace add brettimus/monitor-pr-skill
+
+# Install the plugin
+/plugin install monitor-pr@brettimus-monitor-pr-skill
 ```
 
 **For local development:**
