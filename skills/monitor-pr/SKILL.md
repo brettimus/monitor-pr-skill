@@ -62,7 +62,7 @@ bun run ${CLAUDE_SKILL_ROOT}/scripts/reply-to-thread.ts THREAD_ID BODY [THREAD_I
 
 ## Workflow
 
-**IMPORTANT: You MUST use the Monitor tool for all waiting/polling.** Do NOT use `bash sleep` loops — they burn context and cost tokens on every poll cycle. Instead, use the `Monitor` tool to run a polling script in the background. The Monitor streams stdout lines as notifications, so you get alerted when something happens without occupying the conversation. This is not optional.
+**IMPORTANT: You MUST use the MonitorTool for all waiting/polling.** Do NOT use `bash sleep` loops — they burn context and cost tokens on every poll cycle. Instead, use the `Monitor` tool to run a polling script in the background. The Monitor streams stdout lines as notifications, so you get alerted when something happens without occupying the conversation. This is not optional.
 
 ### 1. Identify PR
 
@@ -112,7 +112,7 @@ Which would you like to address? (e.g., "1,3" or "all" or "none")
 
 Run `bun run ${CLAUDE_SKILL_ROOT}/scripts/fetch-pr-checks.ts` to get structured failure data.
 
-**Wait if pending:** If review bot checks (cursor, bugbot, codeql) are still running, wait before proceeding—they post actionable feedback that must be evaluated. Use the Monitor tool for waiting:
+**Wait if pending:** If review bot checks (cursor, bugbot, codeql) are still running, wait before proceeding—they post actionable feedback that must be evaluated. Use the MonitorTool for waiting:
 
 ```sh
 while true; do
@@ -167,7 +167,7 @@ Bugbot runs as a GitHub Actions check — the step 4 monitor already covers wait
 
 ### 8. Monitor CI and Address Feedback
 
-Use the **Monitor tool** to poll CI status and review feedback instead of blocking:
+Use the **MonitorTool** to poll CI status and review feedback instead of blocking:
 
 1. Run `bun run ${CLAUDE_SKILL_ROOT}/scripts/fetch-pr-checks.ts` to get current CI status
 2. If all checks passed -> proceed to exit conditions
@@ -176,7 +176,7 @@ Use the **Monitor tool** to poll CI status and review feedback instead of blocki
    a. Run `bun run ${CLAUDE_SKILL_ROOT}/scripts/fetch-pr-feedback.ts` for new review feedback
    b. Address any new high/medium feedback immediately (same as step 3)
    c. If changes were needed, commit and push (this restarts CI), then use Monitor to wait
-   d. Use the Monitor tool with the polling script from step 4, then repeat from sub-step 1
+   d. Use the MonitorTool with the polling script from step 4, then repeat from sub-step 1
 5. After all checks pass, do a final feedback check: run `bun run ${CLAUDE_SKILL_ROOT}/scripts/fetch-pr-feedback.ts`. Address any new high/medium feedback — if changes are needed, return to step 6.
 
 ### 9. Repeat
