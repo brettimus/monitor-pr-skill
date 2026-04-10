@@ -62,7 +62,7 @@ bun run ${CLAUDE_SKILL_ROOT}/scripts/reply-to-thread.ts THREAD_ID BODY [THREAD_I
 
 ## Workflow
 
-**IMPORTANT: You MUST use the MonitorTool for all waiting/polling.** Do NOT use `bash sleep` loops — they burn context and cost tokens on every poll cycle. Instead, use the `Monitor` tool to run a polling script in the background. The Monitor streams stdout lines as notifications, so you get alerted when something happens without occupying the conversation. This is not optional.
+**IMPORTANT: You MUST use the [MonitorTool](https://code.claude.com/docs/en/tools-reference#monitor-tool) for all waiting/polling.** Do NOT use `bash sleep` loops — they burn context and cost tokens on every poll cycle. Instead, use the `Monitor` tool to run a polling script in the background. The Monitor streams stdout lines as notifications, so you get alerted when something happens without occupying the conversation. This is not optional.
 
 ### 1. Identify PR
 
