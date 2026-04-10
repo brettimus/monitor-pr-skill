@@ -162,8 +162,8 @@ Bugbot runs as a GitHub Actions check — the step 4 monitor already covers wait
 
 - Fetch comments: `bun run ${CLAUDE_SKILL_ROOT}/scripts/fetch-pr-feedback.ts`
 - For each comment, evaluate whether the feedback is correct and actionable
-- If a comment identifies a real issue large enough to track, create an fp issue under a logical parent: `fp issue create "..." --parent <parent-id>`
-- If a comment is trivial/incorrect, note it and move on
+- If a comment identifies a real issue, fix it
+- If a comment is a false positive, skip it but explain why
 
 ### 8. Monitor CI and Address Feedback
 
