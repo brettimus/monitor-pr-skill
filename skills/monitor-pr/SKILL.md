@@ -123,15 +123,22 @@ while true; do
     sleep 15
     continue
   fi
-  pending=$(gh pr checks --json bucket --jq '[.[] | select(.bucket != "pass" and .bucket != "fail")] | length') || { sleep 30; continue; }
+  pending=$(gh pr checks --json bucket --jq '[.[] | select(.bucket == "pending")] | length') || { sleep 30; continue; }
   if [ "$pending" = "0" ]; then
-    echo "ALL_CHECKS_COMPLETE"
+    failed=$(gh pr checks --json bucket --jq '[.[] | select(.bucket == "fail")] | length') || true
+    if [ "$failed" != "0" ]; then
+      echo "CHECKS_DONE_WITH_FAILURES"
+    else
+      echo "ALL_CHECKS_PASSED"
+    fi
     gh pr checks | head -20
     exit 0
   fi
   sleep 30
 done
 ```
+
+After the monitor fires, re-run `fetch-pr-checks.ts` and branch: if any checks failed, return to step 5. If all passed, continue.
 
 Use `persistent: false` with `timeout_ms: 900000` (15 min).
 
