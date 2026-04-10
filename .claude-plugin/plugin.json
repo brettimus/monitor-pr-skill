@@ -1,0 +1,7 @@
+{
+  "name": "monitor-pr",
+  "description": "Monitor PR CI checks, fix failures, address review bot feedback, and push until green",
+  "author": {
+    "name": "Brett Beutell"
+  }
+}
