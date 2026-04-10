@@ -112,10 +112,17 @@ Which would you like to address? (e.g., "1,3" or "all" or "none")
 
 Run `bun run ${CLAUDE_SKILL_ROOT}/scripts/fetch-pr-checks.ts` to get structured failure data.
 
-**Wait if pending:** If review bot checks (cursor, bugbot, codeql) are still running, wait before proceeding—they post actionable feedback that must be evaluated. Use the MonitorTool for waiting:
+**IMPORTANT: If total checks == 0, checks have NOT registered yet.** GitHub Actions can take 10-30 seconds to register checks after a push. Do NOT conclude "all green" when there are zero checks — that means nothing has started. You MUST wait and re-poll.
+
+**Wait if pending OR if no checks exist yet.** Use the [MonitorTool](https://code.claude.com/docs/en/tools-reference#monitor-tool) for waiting:
 
 ```sh
 while true; do
+  total=$(gh pr checks --json bucket --jq 'length') || { sleep 30; continue; }
+  if [ "$total" = "0" ]; then
+    sleep 15
+    continue
+  fi
   pending=$(gh pr checks --json bucket --jq '[.[] | select(.bucket != "pass" and .bucket != "fail")] | length') || { sleep 30; continue; }
   if [ "$pending" = "0" ]; then
     echo "ALL_CHECKS_COMPLETE"
