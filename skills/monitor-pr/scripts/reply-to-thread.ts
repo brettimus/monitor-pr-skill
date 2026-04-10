@@ -19,7 +19,7 @@
 
 function normalizeBody(body: string): string {
   // Normalize escaped newlines from shell input
-  let normalized = body.replace(/\\r\\n/g, "\\n").replace(/\\n/g, "\n");
+  let normalized = body.replace(/\\r\\n/g, "\n").replace(/\\n/g, "\n");
 
   // Add Claude Code attribution if not already present
   const lines = normalized.trimEnd().split("\n");
@@ -29,9 +29,7 @@ function normalizeBody(body: string): string {
   const botSignaturePattern = /^\*[—-]\s+.+\*$/;
 
   if (!botSignaturePattern.test(lastLine.trim())) {
-    if (normalized && !normalized.endsWith("\n")) normalized += "\n";
-    if (normalized && !normalized.endsWith("\n\n")) normalized += "\n";
-    normalized += "*-- Claude Code*";
+    normalized = normalized.trimEnd() + "\n\n*-- Claude Code*";
   }
 
   return normalized;

@@ -1,6 +1,6 @@
 {
   "name": "monitor-pr",
-  "description": "Monitor PR CI checks, fix failures, address review bot feedback, and push until green",
+  "description": "Skills for monitoring PR CI checks and iterating on fixes until green",
   "author": {
     "name": "Brett Beutell"
   }

@@ -25,6 +25,7 @@
  */
 
 import { parseArgs } from "node:util";
+import { runGh } from "./lib/gh.ts";
 
 // ---------------------------------------------------------------------------
 // Bot patterns
@@ -68,25 +69,6 @@ function isInfoBot(username: string): boolean {
 // ---------------------------------------------------------------------------
 // gh CLI helpers
 // ---------------------------------------------------------------------------
-
-function runGh(args: string[]): unknown | null {
-  const result = Bun.spawnSync(["gh", ...args], {
-    stdout: "pipe",
-    stderr: "pipe",
-  });
-  if (result.exitCode !== 0) {
-    const stderr = result.stderr.toString().trim();
-    if (stderr) console.error(`Error running gh ${args.join(" ")}: ${stderr}`);
-    return null;
-  }
-  const stdout = result.stdout.toString().trim();
-  if (!stdout) return null;
-  try {
-    return JSON.parse(stdout);
-  } catch {
-    return null;
-  }
-}
 
 function getRepoInfo(): { owner: string; name: string } | null {
   const result = runGh(["repo", "view", "--json", "owner,name"]) as Record<
@@ -275,9 +257,9 @@ function categorizeComment(
     /nit[:\s]/i,
     /nitpick/i,
     /suggestion[:\s]/i,
-    /consider\s+/i,
-    /could\s+(also\s+)?/i,
-    /might\s+(want\s+to|be\s+better)/i,
+    /consider\s+(using|renaming|extracting|simplifying|splitting)/i,
+    /could\s+(also\s+)?(be\s+(simplified|shortened|improved|cleaner)|use\s+)/i,
+    /might\s+(want\s+to|be\s+(better|cleaner|nicer))/i,
     /optional[:\s]/i,
     /minor[:\s]/i,
     /style[:\s]/i,

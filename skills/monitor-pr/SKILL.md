@@ -1,7 +1,6 @@
 ---
 name: monitor-pr
-description: Monitor PR CI checks, fix failures, address review bot feedback (cursor[bot]), and push until green. Use when you need to fix CI failures, address review feedback, or continuously push fixes until all checks pass.
-allowed-tools: Read, Glob, Grep, Write, Edit, Bash, Agent, Skill, Monitor
+description: "Use when a pull request has CI failures, review bot feedback to address, or checks still running that need monitoring until green."
 ---
 
 # Monitor PR Until CI Passes
@@ -13,8 +12,6 @@ Continuously iterate on the current branch until all CI checks pass and review f
 **Requires**: `bun` runtime for running helper scripts.
 
 **Important**: All scripts must be run from the repository root directory (where `.git` is located), not from the skill directory. Use the full path to the script via `${CLAUDE_SKILL_ROOT}`.
-
-> When running the fp cli, prefer the global cli, not the packaged one in this repo! just call `fp issue ...`, do not run it with bun
 
 ## Bundled Scripts
 

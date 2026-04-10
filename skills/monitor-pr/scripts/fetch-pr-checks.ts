@@ -11,29 +11,7 @@
  */
 
 import { parseArgs } from "node:util";
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function runGh(args: string[]): unknown | null {
-  const result = Bun.spawnSync(["gh", ...args], {
-    stdout: "pipe",
-    stderr: "pipe",
-  });
-  if (result.exitCode !== 0) {
-    const stderr = result.stderr.toString().trim();
-    if (stderr) console.error(`Error running gh ${args.join(" ")}: ${stderr}`);
-    return null;
-  }
-  const stdout = result.stdout.toString().trim();
-  if (!stdout) return null;
-  try {
-    return JSON.parse(stdout);
-  } catch {
-    return null;
-  }
-}
+import { runGh } from "./lib/gh.ts";
 
 interface PrInfo {
   number: number;
@@ -52,7 +30,6 @@ interface RawCheck {
   name: string;
   bucket: string;
   link: string;
-  workflow: string;
 }
 
 function getChecks(prNumber?: number): RawCheck[] {
@@ -60,6 +37,11 @@ function getChecks(prNumber?: number): RawCheck[] {
   if (prNumber) args.push(String(prNumber));
 
   const result = Bun.spawnSync(args, { stdout: "pipe", stderr: "pipe" });
+  if (result.exitCode !== 0) {
+    const stderr = result.stderr.toString().trim();
+    if (stderr) console.error(`Error running gh pr checks: ${stderr}`);
+    return [];
+  }
   const stdout = result.stdout.toString().trim();
   if (!stdout) return [];
 
@@ -72,7 +54,6 @@ function getChecks(prNumber?: number): RawCheck[] {
         name: parts[0].trim(),
         bucket: parts[1].trim(),
         link: parts.length > 3 ? parts[3].trim() : "",
-        workflow: "",
       });
     }
   }
@@ -202,24 +183,20 @@ function main() {
   const checks = getChecks(prInfo.number);
 
   // Process checks and add failure snippets
-  let failedRuns: WorkflowRun[] | null = null;
+  let failedRuns: WorkflowRun[] | undefined;
 
   const processedChecks = checks.map((check) => {
     const processed: Record<string, unknown> = {
       name: check.name,
       status: check.bucket,
       link: check.link,
-      workflow: check.workflow,
     };
 
     if (processed.status === "fail") {
-      if (failedRuns === null) {
-        failedRuns = getFailedRuns(branch);
-      }
+      failedRuns ??= getFailedRuns(branch);
 
-      const workflowName = (check.workflow || check.name) as string;
-      const matchingRun = failedRuns!.find((r) =>
-        r.name.includes(workflowName),
+      const matchingRun = failedRuns.find((r) =>
+        r.name.includes(check.name),
       );
 
       if (matchingRun) {
